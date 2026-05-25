@@ -155,7 +155,7 @@ function AdminPage() {
   const removeItem = (collection, index) => {
     setContent((prev) => ({
       ...prev,
-      [collection]: prev[collection].filter(
+      [collection]: prev[collection]?.filter(
         (_, itemIndex) => itemIndex !== index,
       ),
     }));
@@ -166,16 +166,16 @@ function AdminPage() {
     try {
       const payload = content[collection].map((item) => ({
         ...Object.fromEntries(
-          Object.entries(item).filter(
+          Object.entries(item)?.filter(
             ([key]) => !["_id", "createdAt", "updatedAt"].includes(key),
           ),
         ),
         features:
           typeof item.features === "string"
             ? item.features
-                .split(",")
-                .map((entry) => entry.trim())
-                .filter(Boolean)
+                ?.split(",")
+                ?.map((entry) => entry.trim())
+                ?.filter(Boolean)
             : item.features,
         stack:
           typeof item.stack === "string"
