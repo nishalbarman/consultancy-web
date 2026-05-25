@@ -17,7 +17,6 @@ function AllRoutes() {
       <Route path="/" element={<HomePage />} />
       <Route path="/app-ads.txt" element={<TextFilePage loader={getAdsTxt} />} />
       <Route path="/robots.txt" element={<TextFilePage loader={getRobotsTxt} />} />
-      <Route path="/robot.txt" element={<TextFilePage loader={getRobotsTxt} />} />
       <Route path="/aboutus" element={<AboutPage />} />
       <Route path="/services" element={<ServicesPage />} />
       <Route path="/projects" element={<ProjectsPage />} />
