@@ -5,7 +5,7 @@ import authRoutes from "./routes/auth.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 import leadRoutes from "./routes/lead.routes.js";
 import siteRoutes from "./routes/site.routes.js";
-import { getAdsTxt, getRobotsTxt } from "./controllers/site.controller.js";
+import { getAdsTxt, getAppAdsTxt, getRobotsTxt } from "./controllers/site.controller.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import connectDB from "./config/dbConfig.js";
 
@@ -39,6 +39,7 @@ app.get("/api/health", (req, res) => {
 });
 
 app.get("/ads.txt", getAdsTxt);
+app.get("/app-ads.txt", getAppAdsTxt);
 app.get("/robots.txt", getRobotsTxt);
 app.get("/robot.txt", getRobotsTxt);
 app.use("/api/site", siteRoutes);

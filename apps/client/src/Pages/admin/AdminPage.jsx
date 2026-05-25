@@ -227,6 +227,21 @@ function AdminPage() {
     }
   };
 
+  const saveAppAdsTxt = async () => {
+    setSaving(true);
+    try {
+      const appAdsTxt = await apiRequest("/admin/app-ads-txt", {
+        method: "PUT",
+        token,
+        body: JSON.stringify({ content: content.appAdsTxt?.content || "" }),
+      });
+      setContent((prev) => ({ ...prev, appAdsTxt }));
+      toast({ title: "app-ads.txt saved", status: "success", position: "top" });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const saveRobotsTxt = async () => {
     setSaving(true);
     try {
@@ -308,6 +323,7 @@ function AdminPage() {
         {[
           "profile",
           "ads.txt",
+          "app-ads.txt",
           "robots.txt",
           "services",
           "projects",
@@ -416,6 +432,50 @@ function AdminPage() {
                     ...prev,
                     adsTxt: {
                       ...(prev.adsTxt || {}),
+                      content: event.target.value,
+                    },
+                  }))
+                }
+              />
+            </FormControl>
+          </section>
+        </section>
+      )}
+
+      {active === "app-ads.txt" && (
+        <section className="mx-auto grid max-w-7xl gap-5">
+          <div
+            className={`${panelClass} flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between`}>
+            <div className="grid gap-2">
+              <h2>app-ads.txt</h2>
+              <span className="text-sm font-semibold text-slate-500">
+                Published at /app-ads.txt
+              </span>
+            </div>
+            <Button
+              colorScheme="twitter"
+              leftIcon={<FiSave />}
+              onClick={saveAppAdsTxt}
+              isLoading={saving}>
+              Save
+            </Button>
+          </div>
+          <section className={panelClass}>
+            <FormControl>
+              <FormLabel>
+                <span className="inline-flex items-center gap-2">
+                  <FiFileText /> text document
+                </span>
+              </FormLabel>
+              <Textarea
+                minH="420px"
+                spellCheck="false"
+                value={content.appAdsTxt?.content || ""}
+                onChange={(event) =>
+                  setContent((prev) => ({
+                    ...prev,
+                    appAdsTxt: {
+                      ...(prev.appAdsTxt || {}),
                       content: event.target.value,
                     },
                   }))

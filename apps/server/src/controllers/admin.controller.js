@@ -1,4 +1,4 @@
-import { AdsTxt, AdminUser, Lead, Order, Profile, Project, RobotsTxt, Service, Testimonial, User } from "../models/index.js";
+import { AdsTxt, AdminUser, AppAdsTxt, Lead, Order, Profile, Project, RobotsTxt, Service, Testimonial, User } from "../models/index.js";
 import { readContent } from "../services/content.service.js";
 import { signToken } from "../utils/token.js";
 import { makeId } from "../utils/makeId.js";
@@ -63,6 +63,23 @@ export async function updateAdsTxt(req, res, next) {
       }
     );
     res.json(adsTxt);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function updateAppAdsTxt(req, res, next) {
+  try {
+    const appAdsTxt = await AppAdsTxt.findOneAndUpdate(
+      {},
+      { content: String(req.body?.content || "") },
+      {
+        new: true,
+        upsert: true,
+        setDefaultsOnInsert: true,
+      }
+    );
+    res.json(appAdsTxt);
   } catch (error) {
     next(error);
   }

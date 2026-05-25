@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/app-ads.txt",
+      "destination": "https://technira-server.vercel.app/api/site/ads-txt"
+    },
+    {
       "source": "/((?!api/|assets/|manifest.webmanifest|vite.svg).*)",
       "destination": "/index.html"
     }

@@ -1,5 +1,6 @@
 export { AdsTxt } from "./AdsTxt.js";
 export { AdminUser } from "./AdminUser.js";
+export { AppAdsTxt } from "./AppAdsTxt.js";
 export { Lead } from "./Lead.js";
 export { Order } from "./Order.js";
 export { Profile } from "./Profile.js";
