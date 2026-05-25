@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+let connectionPromise;
+
 export async function connectDatabase() {
   const MONGODB_URL = process.env.MONGODB_URL;
 
@@ -9,6 +11,16 @@ export async function connectDatabase() {
     );
   }
 
-  await mongoose.connect(MONGODB_URL);
-  console.log("MongoDB connected");
+  if (mongoose.connection.readyState === 1) {
+    return mongoose.connection;
+  }
+
+  if (!connectionPromise) {
+    connectionPromise = mongoose.connect(MONGODB_URL).then((connection) => {
+      console.log("MongoDB connected");
+      return connection.connection;
+    });
+  }
+
+  return connectionPromise;
 }

@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import adminRoutes from "./routes/admin.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
@@ -8,17 +9,20 @@ import { getAdsTxt, getRobotsTxt } from "./controllers/site.controller.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
+const corsOrigins = (process.env.CORS_ORIGIN || "*")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 app.use(express.json({ limit: "1mb" }));
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", process.env.CORS_ORIGIN || "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(204);
-  }
-  next();
-});
+
+app.use(
+  cors({
+    origin: corsOrigins.includes("*") ? "*" : corsOrigins,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 
 app.get("/api/health", (req, res) => {
   res.json({ ok: true, service: "Technira.Space API", database: "mongodb" });
