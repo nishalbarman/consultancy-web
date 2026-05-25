@@ -1,8 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/(.*)",
-      "destination": "/"
+      "source": "/((?!api/|assets/|manifest.webmanifest|vite.svg).*)",
+      "destination": "/index.html"
     }
   ]
 }
