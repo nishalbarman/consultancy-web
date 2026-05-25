@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
 
+const MONGO_URI = process.env.MONGODB_URL;
+
+
 let cached = globalThis.mongoose;
 if (!cached) {
   cached = globalThis.mongoose = { conn: null, promise: null };
