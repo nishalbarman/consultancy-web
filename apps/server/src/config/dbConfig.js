@@ -1,13 +1,17 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-const MONGO_URI = process.env.MONGODB_URL;
-
-let cached = global.mongoose;
+let cached = globalThis.mongoose;
 if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
+  cached = globalThis.mongoose = { conn: null, promise: null };
 }
 
-async function connectDB() {
+export async function dbConnect() {
+  const MONGO_URI = process.env.MONGODB_URL;
+
+  if (!MONGO_URI) {
+    throw new Error("MONGODB_URL is required.");
+  }
+
   if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
@@ -22,4 +26,4 @@ async function connectDB() {
   return cached.conn;
 }
 
-module.exports = connectDB;
+export default dbConnect;

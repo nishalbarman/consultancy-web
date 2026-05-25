@@ -15,12 +15,12 @@ export async function seedIfEmpty() {
   if (!projectCount) await Project.insertMany(seedContent.projects);
   if (!testimonialCount) await Testimonial.insertMany(seedContent.testimonials);
 
-  // const admin = await AdminUser.findOne({ email: adminConfig.email });
-  // if (!admin) {
-  //   await AdminUser.create({
-  //     name: "Technira Admin",
-  //     email: adminConfig.email,
-  //     password: adminConfig.password,
-  //   });
-  // }
+  const admin = await AdminUser.findOne({ email: adminConfig.email });
+  if (!admin) {
+    await AdminUser.create({
+      name: "Technira Admin",
+      email: adminConfig.email,
+      password: adminConfig.password,
+    });
+  }
 }
