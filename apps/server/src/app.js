@@ -8,7 +8,7 @@ import siteRoutes from "./routes/site.routes.js";
 import { getAdsTxt, getRobotsTxt } from "./controllers/site.controller.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
-const dbConnect = require("./config/dbConfig");
+import dbConnect from "./config/dbConfig";
 
 const app = express();
 
