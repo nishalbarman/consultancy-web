@@ -5,13 +5,7 @@ if (!cached) {
   cached = globalThis.mongoose = { conn: null, promise: null };
 }
 
-export async function dbConnect() {
-  const MONGO_URI = process.env.MONGODB_URL;
-
-  if (!MONGO_URI) {
-    throw new Error("MONGODB_URL is required.");
-  }
-
+async function connectDB() {
   if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
@@ -26,4 +20,4 @@ export async function dbConnect() {
   return cached.conn;
 }
 
-export default dbConnect;
+export default connectDB;

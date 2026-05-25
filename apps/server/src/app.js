@@ -7,8 +7,7 @@ import leadRoutes from "./routes/lead.routes.js";
 import siteRoutes from "./routes/site.routes.js";
 import { getAdsTxt, getRobotsTxt } from "./controllers/site.controller.js";
 import { errorHandler } from "./middleware/errorHandler.js";
-
-import { dbConnect } from "./config/dbConfig.js";
+import connectDB from "./config/dbConfig.js";
 
 const app = express();
 
@@ -25,7 +24,7 @@ app.use(
 app.use(async (req, res, next) => {
   try {
     // await seedIfEmpty();
-    await dbConnect();
+    await connectDB();
     next();
   } catch (err) {
     console.error("DB ERROR:", err);
