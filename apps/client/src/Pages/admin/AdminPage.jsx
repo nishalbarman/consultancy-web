@@ -227,6 +227,21 @@ function AdminPage() {
     }
   };
 
+  const saveRobotsTxt = async () => {
+    setSaving(true);
+    try {
+      const robotsTxt = await apiRequest("/admin/robots-txt", {
+        method: "PUT",
+        token,
+        body: JSON.stringify({ content: content.robotsTxt?.content || "" }),
+      });
+      setContent((prev) => ({ ...prev, robotsTxt }));
+      toast({ title: "robots.txt saved", status: "success", position: "top" });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const updateLead = async (leadId, status) => {
     const leads = await apiRequest(`/admin/leads/${leadId}`, {
       method: "PUT",
@@ -293,6 +308,7 @@ function AdminPage() {
         {[
           "profile",
           "ads.txt",
+          "robots.txt",
           "services",
           "projects",
           "testimonials",
@@ -400,6 +416,50 @@ function AdminPage() {
                     ...prev,
                     adsTxt: {
                       ...(prev.adsTxt || {}),
+                      content: event.target.value,
+                    },
+                  }))
+                }
+              />
+            </FormControl>
+          </section>
+        </section>
+      )}
+
+      {active === "robots.txt" && (
+        <section className="mx-auto grid max-w-7xl gap-5">
+          <div
+            className={`${panelClass} flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between`}>
+            <div className="grid gap-2">
+              <h2>robots.txt</h2>
+              <span className="text-sm font-semibold text-slate-500">
+                Published at /robots.txt
+              </span>
+            </div>
+            <Button
+              colorScheme="twitter"
+              leftIcon={<FiSave />}
+              onClick={saveRobotsTxt}
+              isLoading={saving}>
+              Save
+            </Button>
+          </div>
+          <section className={panelClass}>
+            <FormControl>
+              <FormLabel>
+                <span className="inline-flex items-center gap-2">
+                  <FiFileText /> text document
+                </span>
+              </FormLabel>
+              <Textarea
+                minH="420px"
+                spellCheck="false"
+                value={content.robotsTxt?.content || ""}
+                onChange={(event) =>
+                  setContent((prev) => ({
+                    ...prev,
+                    robotsTxt: {
+                      ...(prev.robotsTxt || {}),
                       content: event.target.value,
                     },
                   }))

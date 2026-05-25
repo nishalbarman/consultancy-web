@@ -4,7 +4,7 @@ import authRoutes from "./routes/auth.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 import leadRoutes from "./routes/lead.routes.js";
 import siteRoutes from "./routes/site.routes.js";
-import { getAdsTxt } from "./controllers/site.controller.js";
+import { getAdsTxt, getRobotsTxt } from "./controllers/site.controller.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
@@ -25,6 +25,8 @@ app.get("/api/health", (req, res) => {
 });
 
 app.get("/ads.txt", getAdsTxt);
+app.get("/robots.txt", getRobotsTxt);
+app.get("/robot.txt", getRobotsTxt);
 app.use("/api/site", siteRoutes);
 app.use("/api/messages", leadRoutes);
 app.use("/api/auth", authRoutes);

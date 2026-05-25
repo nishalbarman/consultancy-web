@@ -27,7 +27,9 @@ function App() {
   const location = useLocation();
   // const isWhite = location.pathname !== "/" ? true : false;
   const isWhite = true;
-  const isPlainTextPage = location.pathname === "/ads.txt";
+  const isPlainTextPage = ["/ads.txt", "/robots.txt", "/robot.txt"].includes(
+    location.pathname,
+  );
 
   return (
     <>

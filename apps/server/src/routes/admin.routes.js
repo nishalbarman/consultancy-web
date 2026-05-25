@@ -9,6 +9,7 @@ import {
   updateLead,
   updateOrder,
   updateProfile,
+  updateRobotsTxt,
 } from "../controllers/admin.controller.js";
 import { requireAdmin } from "../middleware/requireAdmin.js";
 
@@ -20,6 +21,7 @@ router.get("/orders", requireAdmin, getAdminOrders);
 router.put("/orders/:id", requireAdmin, updateOrder);
 router.get("/users", requireAdmin, getAdminUsers);
 router.put("/ads-txt", requireAdmin, updateAdsTxt);
+router.put("/robots-txt", requireAdmin, updateRobotsTxt);
 router.put("/profile", requireAdmin, updateProfile);
 router.put("/leads/:id", requireAdmin, updateLead);
 router.put("/:collection", requireAdmin, updateCollection);
