@@ -8,21 +8,32 @@ import siteRoutes from "./routes/site.routes.js";
 import { getAdsTxt, getRobotsTxt } from "./controllers/site.controller.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
+const dbConnect = require("./config/dbConfig");
+
 const app = express();
-const corsOrigins = (process.env.CORS_ORIGIN || "*")
-  .split(",")
-  .map((origin) => origin.trim())
-  .filter(Boolean);
 
 app.use(express.json({ limit: "1mb" }));
 
 app.use(
   cors({
-    origin: corsOrigins.includes("*") ? "*" : corsOrigins,
+    origin: process.env.CORS_ORIGIN || "*",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
+
+app.use(async (req, res, next) => {
+  try {
+    // await seedIfEmpty();
+    await dbConnect();
+    next();
+  } catch (err) {
+    console.error("DB ERROR:", err);
+    return res.status(500).json({
+      message: "Database connection failed",
+    });
+  }
+});
 
 app.get("/api/health", (req, res) => {
   res.json({ ok: true, service: "Technira.Space API", database: "mongodb" });
