@@ -27,16 +27,18 @@ function App() {
   const location = useLocation();
   // const isWhite = location.pathname !== "/" ? true : false;
   const isWhite = true;
+  const isPlainTextPage = location.pathname === "/ads.txt";
 
   return (
     <>
-      {location.pathname !== "/login" &&
+      {!isPlainTextPage &&
+        location.pathname !== "/login" &&
         location.pathname !== "/signup" &&
         location.pathname !== "/admin" && (
           <Navbar isWhiteBackground={isWhite} isOfferVisible={false} />
         )}
       <AllRoutes />
-      {location.pathname !== "/admin" && <Footer />}
+      {!isPlainTextPage && location.pathname !== "/admin" && <Footer />}
     </>
   );
 }

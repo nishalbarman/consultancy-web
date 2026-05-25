@@ -1,3 +1,4 @@
+export { AdsTxt } from "./AdsTxt.js";
 export { AdminUser } from "./AdminUser.js";
 export { Lead } from "./Lead.js";
 export { Order } from "./Order.js";

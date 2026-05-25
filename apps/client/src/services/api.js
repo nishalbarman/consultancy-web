@@ -23,6 +23,14 @@ export function getSiteData() {
   return apiRequest("/site");
 }
 
+export async function getAdsTxt() {
+  const response = await fetch(`${API_BASE}/site/ads-txt`);
+  if (!response.ok) {
+    throw new Error("Request failed");
+  }
+  return response.text();
+}
+
 export function createLead(payload) {
   return apiRequest("/messages/create", {
     method: "POST",

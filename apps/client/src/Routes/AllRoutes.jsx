@@ -1,6 +1,7 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import AboutPage from "../Pages/about/AboutPage";
+import AdsTxtPage from "../Pages/ads/AdsTxtPage";
 import AdminPage from "../Pages/admin/AdminPage";
 import Contact from "../Pages/contactus/Contact";
 import HomePage from "../Pages/home/HomePage";
@@ -13,6 +14,7 @@ function AllRoutes() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/ads.txt" element={<AdsTxtPage />} />
       <Route path="/aboutus" element={<AboutPage />} />
       <Route path="/services" element={<ServicesPage />} />
       <Route path="/projects" element={<ProjectsPage />} />

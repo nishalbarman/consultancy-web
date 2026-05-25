@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FiPlus, FiSave, FiTrash2 } from "react-icons/fi";
+import { FiFileText, FiPlus, FiSave, FiTrash2 } from "react-icons/fi";
 import { PageSkeleton, SkeletonBlock } from "../../components/Skeleton";
 import { apiRequest } from "../../services/api";
 import { theme } from "../../theme";
@@ -73,7 +73,13 @@ function Input(props) {
 }
 
 function Textarea({ minH, ...props }) {
-  return <textarea className={`${fieldClass} min-h-28`} {...props} />;
+  return (
+    <textarea
+      className={`${fieldClass} min-h-28`}
+      style={minH ? { minHeight: minH } : undefined}
+      {...props}
+    />
+  );
 }
 
 function Select(props) {
@@ -206,6 +212,21 @@ function AdminPage() {
     }
   };
 
+  const saveAdsTxt = async () => {
+    setSaving(true);
+    try {
+      const adsTxt = await apiRequest("/admin/ads-txt", {
+        method: "PUT",
+        token,
+        body: JSON.stringify({ content: content.adsTxt?.content || "" }),
+      });
+      setContent((prev) => ({ ...prev, adsTxt }));
+      toast({ title: "ads.txt saved", status: "success", position: "top" });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const updateLead = async (leadId, status) => {
     const leads = await apiRequest(`/admin/leads/${leadId}`, {
       method: "PUT",
@@ -271,6 +292,7 @@ function AdminPage() {
       <nav className="mx-auto my-6 flex max-w-7xl flex-wrap gap-2">
         {[
           "profile",
+          "ads.txt",
           "services",
           "projects",
           "testimonials",
@@ -341,6 +363,50 @@ function AdminPage() {
             isLoading={saving}>
             <FiSave /> Save profile
           </Button>
+        </section>
+      )}
+
+      {active === "ads.txt" && (
+        <section className="mx-auto grid max-w-7xl gap-5">
+          <div
+            className={`${panelClass} flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between`}>
+            <div className="grid gap-2">
+              <h2>ads.txt</h2>
+              <span className="text-sm font-semibold text-slate-500">
+                Published at /ads.txt
+              </span>
+            </div>
+            <Button
+              colorScheme="twitter"
+              leftIcon={<FiSave />}
+              onClick={saveAdsTxt}
+              isLoading={saving}>
+              Save
+            </Button>
+          </div>
+          <section className={panelClass}>
+            <FormControl>
+              <FormLabel>
+                <span className="inline-flex items-center gap-2">
+                  <FiFileText /> text document
+                </span>
+              </FormLabel>
+              <Textarea
+                minH="420px"
+                spellCheck="false"
+                value={content.adsTxt?.content || ""}
+                onChange={(event) =>
+                  setContent((prev) => ({
+                    ...prev,
+                    adsTxt: {
+                      ...(prev.adsTxt || {}),
+                      content: event.target.value,
+                    },
+                  }))
+                }
+              />
+            </FormControl>
+          </section>
         </section>
       )}
 

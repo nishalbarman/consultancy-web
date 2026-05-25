@@ -5,6 +5,7 @@ import {
   getAdminUsers,
   loginAdmin,
   updateCollection,
+  updateAdsTxt,
   updateLead,
   updateOrder,
   updateProfile,
@@ -18,6 +19,7 @@ router.get("/content", requireAdmin, getAdminContent);
 router.get("/orders", requireAdmin, getAdminOrders);
 router.put("/orders/:id", requireAdmin, updateOrder);
 router.get("/users", requireAdmin, getAdminUsers);
+router.put("/ads-txt", requireAdmin, updateAdsTxt);
 router.put("/profile", requireAdmin, updateProfile);
 router.put("/leads/:id", requireAdmin, updateLead);
 router.put("/:collection", requireAdmin, updateCollection);
