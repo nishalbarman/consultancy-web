@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import AboutPage from "../Pages/about/AboutPage";
 import AdminPage from "../Pages/admin/AdminPage";
 import Contact from "../Pages/contactus/Contact";
+import CustomPageView from "../Pages/custom/CustomPageView";
 import HomePage from "../Pages/home/HomePage";
 import Dashboard from "../Pages/portal/Dashboard";
 import PortalAuth from "../Pages/portal/PortalAuth";
@@ -24,6 +25,7 @@ function AllRoutes() {
       <Route path="/portal" element={<PortalAuth />} />
       <Route path="/portal/dashboard" element={<Dashboard />} />
       <Route path="/admin" element={<AdminPage />} />
+      <Route path="/p/:slug" element={<CustomPageView />} />
     </Routes>
   );
 }

@@ -1,9 +1,54 @@
-const primary = "blue";
+
+const primary = "mono";
 
 const palettes = {
+  mono: {
+    text: "text-slate-900",
+    textHover: "hover:text-slate-700",
+    textSoft: "text-slate-400",
+    textPale: "text-slate-200",
+    bg: "bg-slate-900",
+    bgHover: "hover:bg-slate-800",
+    bgSoft: "bg-slate-100",
+    bgPale: "bg-slate-50",
+    border: "border-slate-400",
+    borderHover: "hover:border-slate-500",
+    borderSoft: "border-slate-200",
+    focus: "focus:border-slate-500 focus:ring-slate-100",
+    shadow: "shadow-slate-900/10",
+
+    accentText: "text-slate-700",
+    accentBg: "bg-slate-800",
+    accentBgHover: "hover:bg-slate-700",
+    accentShadow: "shadow-slate-900/10",
+
+    gradientBtn: "bg-slate-900",
+    gradientBtnHover:
+      "hover:bg-slate-800 hover:shadow-[0_0_30px_-5px_rgba(0,0,0,0.15)]",
+
+    heroWash:
+      "bg-[radial-gradient(ellipse_80%_80%_at_20%_0%,_rgba(0,0,0,0.06),_transparent_40%),radial-gradient(ellipse_60%_60%_at_80%_100%,_rgba(0,0,0,0.03),_transparent_40%),linear-gradient(135deg,_#0a0a0a_0%,_#1a1a1a_50%,_#0f172a_100%)]",
+    contactWash:
+      "bg-[linear-gradient(120deg,_rgba(15,23,42,0.85),_rgba(15,23,42,0.94)),url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1600&q=80')]",
+    portalWash:
+      "bg-[radial-gradient(circle_at_top_left,_rgba(0,0,0,0.04),_transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(0,0,0,0.02),_transparent_34%),#f8fafc]",
+
+    glassBg: "bg-white/80 backdrop-blur-md",
+    glassBorder: "border border-slate-200",
+
+    glowShadow: "shadow-[0_0_40px_-5px_rgba(0,0,0,0.08)]",
+    accentGlow: "shadow-[0_0_30px_-5px_rgba(0,0,0,0.06)]",
+
+    amberText: "text-slate-600",
+    amberBg: "bg-slate-600",
+    amberBgSoft: "bg-slate-200",
+
+    sectionBg: "bg-white",
+    darkBg: "bg-slate-950",
+  },
   blue: {
-    text: "text-sky-700",
-    textHover: "hover:text-sky-900",
+    text: "text-sky-600",
+    textHover: "hover:text-sky-800",
     textSoft: "text-sky-300",
     textPale: "text-sky-100",
     bg: "bg-sky-600",
@@ -11,37 +56,61 @@ const palettes = {
     bgSoft: "bg-sky-100",
     bgPale: "bg-sky-50",
     border: "border-sky-300",
-    borderHover: "hover:border-sky-300",
+    borderHover: "hover:border-sky-400",
     borderSoft: "border-sky-200",
     focus: "focus:border-sky-400 focus:ring-sky-100",
-    shadow: "shadow-sky-600/20",
-    heroWash:
-      "bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.18),_transparent_36%),linear-gradient(135deg,_#ffffff_0%,_#eef6ff_52%,_#f8fafc_100%)]",
-    contactWash:
-      "bg-[linear-gradient(120deg,_rgba(14,165,233,0.35),_rgba(15,23,42,0.92)),url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1600&q=80')]",
-    portalWash:
-      "bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.18),_transparent_34%),#f8fafc]",
+    shadow: "shadow-sky-600/25",
+    accentText: "text-cyan-600",
+    accentBg: "bg-cyan-500",
+    accentBgHover: "hover:bg-cyan-600",
+    accentShadow: "shadow-cyan-500/25",
+    gradientBtn: "bg-gradient-to-r from-sky-600 to-cyan-500",
+    gradientBtnHover: "hover:from-sky-700 hover:to-cyan-600 hover:shadow-[0_0_30px_-5px_rgba(2,132,199,0.4)]",
+    heroWash: "bg-[radial-gradient(ellipse_80%_80%_at_20%_0%,_rgba(2,132,199,0.25),_transparent_40%),radial-gradient(ellipse_60%_60%_at_80%_100%,_rgba(6,182,212,0.12),_transparent_40%),linear-gradient(135deg,_#0a1628_0%,_#102a4c_50%,_#0f172a_100%)]",
+    contactWash: "bg-[linear-gradient(120deg,_rgba(2,132,199,0.42),_rgba(15,23,42,0.94)),url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1600&q=80')]",
+    portalWash: "bg-[radial-gradient(circle_at_top_left,_rgba(2,132,199,0.1),_transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(6,182,212,0.06),_transparent_34%),#f8fafc]",
+    glassBg: "bg-white/80 backdrop-blur-md",
+    glassBorder: "border border-white/20",
+    glowShadow: "shadow-[0_0_40px_-5px_rgba(2,132,199,0.25)]",
+    accentGlow: "shadow-[0_0_30px_-5px_rgba(6,182,212,0.2)]",
+    amberText: "text-amber-600",
+    amberBg: "bg-amber-400",
+    amberBgSoft: "bg-amber-100",
+    sectionBg: "bg-slate-50",
+    darkBg: "bg-slate-950",
   },
-  orange: {
-    text: "text-orange-700",
-    textHover: "hover:text-orange-900",
-    textSoft: "text-orange-300",
-    textPale: "text-orange-100",
-    bg: "bg-orange-600",
-    bgHover: "hover:bg-orange-700",
-    bgSoft: "bg-orange-100",
-    bgPale: "bg-orange-50",
-    border: "border-orange-300",
-    borderHover: "hover:border-orange-300",
-    borderSoft: "border-orange-200",
-    focus: "focus:border-orange-400 focus:ring-orange-100",
-    shadow: "shadow-orange-600/20",
-    heroWash:
-      "bg-[radial-gradient(circle_at_top_left,_rgba(249,115,22,0.18),_transparent_36%),linear-gradient(135deg,_#ffffff_0%,_#fff7ed_52%,_#f8fafc_100%)]",
-    contactWash:
-      "bg-[linear-gradient(120deg,_rgba(249,115,22,0.34),_rgba(15,23,42,0.92)),url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1600&q=80')]",
-    portalWash:
-      "bg-[radial-gradient(circle_at_top_left,_rgba(249,115,22,0.18),_transparent_34%),#f8fafc]",
+  purple: {
+    text: "text-violet-600",
+    textHover: "hover:text-violet-800",
+    textSoft: "text-violet-300",
+    textPale: "text-violet-100",
+    bg: "bg-violet-600",
+    bgHover: "hover:bg-violet-700",
+    bgSoft: "bg-violet-100",
+    bgPale: "bg-violet-50",
+    border: "border-violet-300",
+    borderHover: "hover:border-violet-400",
+    borderSoft: "border-violet-200",
+    focus: "focus:border-violet-400 focus:ring-violet-100",
+    shadow: "shadow-violet-600/25",
+    accentText: "text-cyan-600",
+    accentBg: "bg-cyan-500",
+    accentBgHover: "hover:bg-cyan-600",
+    accentShadow: "shadow-cyan-500/25",
+    gradientBtn: "bg-gradient-to-r from-violet-600 to-cyan-500",
+    gradientBtnHover: "hover:from-violet-700 hover:to-cyan-600 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.4)]",
+    heroWash: "bg-[radial-gradient(ellipse_80%_80%_at_20%_0%,_rgba(139,92,246,0.25),_transparent_40%),radial-gradient(ellipse_60%_60%_at_80%_100%,_rgba(6,182,212,0.12),_transparent_40%),linear-gradient(135deg,_#0b0820_0%,_#15103a_50%,_#0f172a_100%)]",
+    contactWash: "bg-[linear-gradient(120deg,_rgba(139,92,246,0.42),_rgba(15,23,42,0.94)),url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1600&q=80')]",
+    portalWash: "bg-[radial-gradient(circle_at_top_left,_rgba(139,92,246,0.1),_transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(6,182,212,0.06),_transparent_34%),#f8fafc]",
+    glassBg: "bg-white/80 backdrop-blur-md",
+    glassBorder: "border border-white/20",
+    glowShadow: "shadow-[0_0_40px_-5px_rgba(139,92,246,0.25)]",
+    accentGlow: "shadow-[0_0_30px_-5px_rgba(6,182,212,0.2)]",
+    amberText: "text-amber-600",
+    amberBg: "bg-amber-400",
+    amberBgSoft: "bg-amber-100",
+    sectionBg: "bg-slate-50",
+    darkBg: "bg-slate-950",
   },
 };
 

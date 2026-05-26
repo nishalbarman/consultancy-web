@@ -4,43 +4,18 @@ import { useLocation } from "react-router-dom";
 import Footer from "./Component/footer/Footer";
 
 function App() {
-  // const [services, setServices] = useState([]);
-
-  // const arrayBufferToBase64 = (buffer) => {
-  //   var binary = "";
-  //   var bytes = [].slice.call(new Uint8Array(buffer));
-  //   bytes.forEach((b) => (binary += String.fromCharCode(b)));
-  //   return window.btoa(binary);
-  // };
-
-  // const makeRequest = async () => {
-  //   const res = await fetch("http://localhost:8000/services");
-  //   const data = await res.json();
-  //   setServices(data.services);
-  //   console.log(data);
-  // };
-
-  // useEffect(() => {
-  //   makeRequest();
-  // }, []);
-
   const location = useLocation();
-  // const isWhite = location.pathname !== "/" ? true : false;
-  const isWhite = true;
-  const isPlainTextPage = ["/ads.txt", "/robots.txt", "/robot.txt"].includes(
-    location.pathname,
-  );
+  const isHomePage = location.pathname === "/";
+  const isPortalPage = ["/portal", "/portal/dashboard"].includes(location.pathname);
+  const isPlainTextPage = ["/ads.txt", "/robots.txt", "/robot.txt"].includes(location.pathname);
+  const isAdminPage = location.pathname === "/admin";
+  const hideChrome = isPlainTextPage || isAdminPage || isPortalPage;
 
   return (
     <>
-      {!isPlainTextPage &&
-        location.pathname !== "/login" &&
-        location.pathname !== "/signup" &&
-        location.pathname !== "/admin" && (
-          <Navbar isWhiteBackground={isWhite} isOfferVisible={false} />
-        )}
+      {!hideChrome && <Navbar transparent={isHomePage} />}
       <AllRoutes />
-      {!isPlainTextPage && location.pathname !== "/admin" && <Footer />}
+      {!isPlainTextPage && !isAdminPage && !isPortalPage && <Footer />}
     </>
   );
 }

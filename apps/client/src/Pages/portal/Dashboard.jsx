@@ -1,108 +1,149 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { FiClock, FiLogOut, FiPackage, FiPlus, FiSend, FiUser, FiCheckCircle, FiLoader, FiX, FiAlertCircle } from "react-icons/fi";
 import { DashboardSkeleton } from "../../components/Skeleton";
 import { createOrder, getDashboard } from "../../services/api";
-import { theme } from "../../theme";
 
-const inputClass = `w-full rounded-2xl border border-slate-200 px-4 py-3 font-medium outline-none ${theme.focus}`;
+const inputClass = "w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-100";
+
+const statusConfig = {
+  requested: { color: "bg-amber-100 text-amber-700 border-amber-200", icon: FiClock, label: "Requested" },
+  confirmed: { color: "bg-blue-100 text-blue-700 border-blue-200", icon: FiCheckCircle, label: "Confirmed" },
+  "in-progress": { color: "bg-purple-100 text-purple-700 border-purple-200", icon: FiLoader, label: "In Progress" },
+  delivered: { color: "bg-emerald-100 text-emerald-700 border-emerald-200", icon: FiCheckCircle, label: "Delivered" },
+  cancelled: { color: "bg-red-100 text-red-700 border-red-200", icon: FiX, label: "Cancelled" },
+};
 
 function Dashboard() {
   const navigate = useNavigate();
   const toast = ({ title }) => window.alert(title);
   const token = localStorage.getItem("userToken");
+  const user = JSON.parse(localStorage.getItem("portalUser") || "{}");
   const [dashboard, setDashboard] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({ serviceTitle: "Web App Development", projectName: "", description: "", timeline: "" });
 
   const loadDashboard = async () => setDashboard(await getDashboard(token));
-
-  useEffect(() => {
-    if (!token) return navigate("/portal");
-    loadDashboard().catch(() => navigate("/portal"));
-  }, []);
-
-  const updateForm = (event) => setForm((prev) => ({ ...prev, [event.target.name]: event.target.value }));
+  useEffect(() => { if (!token) return navigate("/portal"); loadDashboard().catch(() => navigate("/portal")); }, []);
+  const updateForm = (e) => setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
 
   const submitOrder = async () => {
-    try {
-      await createOrder(token, form);
-      setForm((prev) => ({ ...prev, projectName: "", description: "", timeline: "" }));
-      await loadDashboard();
-      toast({ title: "Order request created", status: "success", position: "top" });
-    } catch (error) {
-      toast({ title: error.message, status: "error", position: "top" });
-    }
+    if (!form.projectName.trim() || !form.description.trim()) { toast({ title: "Please fill in project name and description." }); return; }
+    setSubmitting(true);
+    try { await createOrder(token, form); setForm({ serviceTitle: "Web App Development", projectName: "", description: "", timeline: "" }); setShowForm(false); await loadDashboard(); toast({ title: "Order created! We'll review it shortly." }); }
+    catch (error) { toast({ title: error.message }); }
+    finally { setSubmitting(false); }
   };
 
   if (!dashboard) return <DashboardSkeleton />;
 
-  return (
-    <main className="min-h-screen bg-slate-50 px-5 pt-28 text-slate-950 sm:px-8 lg:px-10">
-      <section className="mx-auto max-w-7xl">
-        <div className="flex flex-col gap-5 rounded-3xl bg-slate-950 p-7 text-white shadow-2xl shadow-slate-950/15 sm:p-9 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <span className={`rounded-full bg-white/10 px-4 py-1.5 text-sm font-bold ${theme.textPale}`}>Client Dashboard</span>
-            <h1 className="mt-4 text-3xl font-black">Welcome, {dashboard.user.name}</h1>
-            <p className="mt-2 text-slate-300">Review your orders and request new service work.</p>
-          </div>
-          <button className="w-fit rounded-xl border border-white/20 px-5 py-3 font-bold hover:bg-white hover:text-slate-950" onClick={() => {
-            localStorage.removeItem("userToken");
-            localStorage.removeItem("portalUser");
-            navigate("/portal");
-          }}>
-            Logout
-          </button>
-        </div>
+  const stats = [
+    { label: "Total Orders", value: dashboard.stats.totalOrders, icon: FiPackage },
+    { label: "In Progress", value: dashboard.stats.activeOrders, icon: FiLoader },
+    { label: "Delivered", value: dashboard.stats.deliveredOrders, icon: FiCheckCircle },
+  ];
 
-        <div className="mt-6 grid gap-4 sm:grid-cols-3">
-          {[
-            ["Total orders", dashboard.stats.totalOrders],
-            ["Active", dashboard.stats.activeOrders],
-            ["Delivered", dashboard.stats.deliveredOrders],
-          ].map(([label, value]) => (
-            <article key={label} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-              <strong className="block text-3xl font-black">{value}</strong>
-              <span className="font-bold text-slate-500">{label}</span>
-            </article>
+  return (
+    <div className="min-h-screen bg-slate-50">
+      <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 lg:px-8">
+          <div className="flex items-center gap-3">
+            <div className="grid h-9 w-9 place-items-center rounded-xl bg-slate-900 text-sm font-bold text-white">{user.name?.charAt(0)?.toUpperCase() || "U"}</div>
+            <div className="hidden sm:block"><p className="text-sm font-bold text-slate-900">Welcome, {user.name}</p><p className="text-xs text-slate-500">Client Portal</p></div>
+          </div>
+          <div className="flex items-center gap-3">
+            <button onClick={() => setShowForm(true)} className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"><FiPlus className="h-4 w-4" /> New Order</button>
+            <button onClick={() => { localStorage.removeItem("userToken"); localStorage.removeItem("portalUser"); navigate("/portal"); }} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"><FiLogOut className="h-4 w-4" /> <span className="hidden sm:inline">Sign Out</span></button>
+          </div>
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-7xl px-5 py-8 lg:px-8">
+        <div className="grid gap-4 sm:grid-cols-3">
+          {stats.map((stat, i) => (
+            <motion.article key={stat.label} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="mb-3 grid h-10 w-10 place-items-center rounded-xl bg-slate-100 text-slate-600"><stat.icon className="h-5 w-5" /></div>
+              <strong className="block text-3xl font-black text-slate-900">{stat.value}</strong>
+              <span className="text-sm font-semibold text-slate-500">{stat.label}</span>
+            </motion.article>
           ))}
         </div>
 
-        <section className="mt-6 grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-          <article className="grid gap-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-xl font-black">New order request</h2>
-            <select className={inputClass} name="serviceTitle" value={form.serviceTitle} onChange={updateForm}>
-              <option>Web App Development</option>
-              <option>App Development</option>
-              <option>Backend and API Development</option>
-              <option>Admin Panel Development</option>
-            </select>
-            <input className={inputClass} name="projectName" placeholder="Project name" value={form.projectName} onChange={updateForm} />
-            <input className={inputClass} name="timeline" placeholder="Expected timeline" value={form.timeline} onChange={updateForm} />
-            <textarea className={`${inputClass} min-h-32`} name="description" placeholder="Tell us what you need" value={form.description} onChange={updateForm} />
-            <button className={`rounded-2xl ${theme.bg} px-5 py-3 font-black text-white ${theme.bgHover}`} onClick={submitOrder}>Submit order</button>
-          </article>
-
-          <article className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-xl font-black">Your orders</h2>
-            <div className="mt-4 grid gap-4">
-              {dashboard.orders.length === 0 && <p className="text-slate-500">No orders yet.</p>}
-              {dashboard.orders.map((order) => (
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5" key={order._id}>
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <strong className="block text-lg">{order.projectName}</strong>
-                      <span className="text-sm font-bold text-slate-500">{order.serviceTitle}</span>
+        <div className="mt-8">
+          <div className="flex items-center justify-between"><h2 className="text-xl font-black text-slate-900">Your Orders</h2><span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">{dashboard.orders.length} total</span></div>
+          <div className="mt-4 grid gap-4">
+            {dashboard.orders.length === 0 && (
+              <div className="rounded-2xl border border-dashed border-slate-200 bg-white px-6 py-16 text-center">
+                <div className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-slate-100"><FiPackage className="h-6 w-6 text-slate-400" /></div>
+                <h3 className="text-lg font-bold text-slate-900">No orders yet</h3>
+                <p className="mt-1 text-sm text-slate-500">Ready to get started? Submit your first service request.</p>
+                <button onClick={() => setShowForm(true)} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"><FiPlus className="h-4 w-4" /> Create your first order</button>
+              </div>
+            )}
+            <AnimatePresence>
+              {dashboard.orders.map((order, i) => {
+                const status = statusConfig[order.status] || statusConfig.requested;
+                const StatusIcon = status.icon;
+                return (
+                  <motion.div key={order._id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md">
+                    <div className="flex flex-wrap items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3">
+                          <h3 className="text-lg font-bold text-slate-900">{order.projectName}</h3>
+                          <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-bold ${status.color}`}><StatusIcon className="h-3 w-3" /> {status.label}</span>
+                        </div>
+                        <div className="mt-1.5 flex flex-wrap items-center gap-2 text-sm text-slate-500">
+                          <span className="rounded-lg bg-slate-100 px-2 py-0.5 font-medium">{order.serviceTitle}</span>
+                          {order.timeline && <><span className="text-slate-300">·</span><span className="inline-flex items-center gap-1"><FiClock className="h-3.5 w-3.5" /> {order.timeline}</span></>}
+                        </div>
+                        {order.description && <p className="mt-3 text-sm leading-relaxed text-slate-600">{order.description}</p>}
+                      </div>
+                      <div className="flex shrink-0 flex-col items-end gap-1">
+                        <span className="text-xs text-slate-400">{new Date(order.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+                        <span className="text-xs text-slate-400">{new Date(order.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}</span>
+                      </div>
                     </div>
-                    <span className={`rounded-full ${theme.bgSoft} px-3 py-1 text-xs font-black uppercase ${theme.text}`}>{order.status}</span>
-                  </div>
-                  <p className="mt-3 leading-7 text-slate-600">{order.description || "No description added."}</p>
-                  <small className="text-slate-500">{new Date(order.createdAt).toLocaleString()}</small>
-                </div>
-              ))}
-            </div>
-          </article>
-        </section>
-      </section>
-    </main>
+                    {order.status !== "cancelled" && (
+                      <div className="mt-5 border-t border-slate-100 pt-4">
+                        <div className="flex items-center gap-1">
+                          {["requested", "confirmed", "in-progress", "delivered"].map((step, idx) => {
+                            const stepIdx = ["requested", "confirmed", "in-progress", "delivered"].indexOf(order.status);
+                            const isComplete = idx <= stepIdx;
+                            return <React.Fragment key={step}><div className={`h-1.5 w-1.5 rounded-full ${isComplete ? "bg-slate-900" : "bg-slate-200"}`} />{idx < 3 && <div className={`h-0.5 flex-1 rounded ${isComplete ? "bg-slate-900" : "bg-slate-200"}`} />}</React.Fragment>;
+                          })}
+                        </div>
+                        <div className="mt-2 flex justify-between text-[10px] font-semibold uppercase tracking-wider text-slate-400"><span>Requested</span><span>Confirmed</span><span>In Progress</span><span>Delivered</span></div>
+                      </div>
+                    )}
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+          </div>
+        </div>
+      </main>
+
+      <AnimatePresence>
+        {showForm && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm" onClick={() => setShowForm(false)} />
+            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} transition={{ type: "spring", stiffness: 350, damping: 30 }}
+              className="fixed inset-x-5 top-20 z-50 mx-auto max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl sm:inset-x-auto sm:left-1/2 sm:w-full sm:-translate-x-1/2">
+              <div className="mb-5 flex items-center justify-between"><div><h2 className="text-xl font-black text-slate-900">New Order Request</h2><p className="mt-1 text-sm text-slate-500">Tell us what you need built.</p></div><button onClick={() => setShowForm(false)} className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600"><FiX className="h-5 w-5" /></button></div>
+              <div className="grid gap-4">
+                <label className="grid gap-1.5"><span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Service Type</span><select className={inputClass} name="serviceTitle" value={form.serviceTitle} onChange={updateForm}><option>Web App Development</option><option>App Development</option><option>Backend and API Development</option><option>Admin Panel Development</option></select></label>
+                <label className="grid gap-1.5"><span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Project Name *</span><input className={inputClass} name="projectName" placeholder="e.g. E-commerce Dashboard" value={form.projectName} onChange={updateForm} /></label>
+                <label className="grid gap-1.5"><span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Expected Timeline</span><input className={inputClass} name="timeline" placeholder="e.g. 2-4 weeks" value={form.timeline} onChange={updateForm} /></label>
+                <label className="grid gap-1.5"><span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Description *</span><textarea className={`${inputClass} min-h-28 resize-y`} name="description" placeholder="Describe your project requirements, features, and goals..." value={form.description} onChange={updateForm} /></label>
+                <button onClick={submitOrder} disabled={submitting} className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 py-3 text-sm font-bold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60">{submitting ? <>Submitting...</> : <><FiSend className="h-4 w-4" /> Submit Order Request</>}</button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 

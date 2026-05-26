@@ -1,7 +1,7 @@
 import React from "react";
+import { motion } from "framer-motion";
 import { PageSkeleton } from "../../components/Skeleton";
 import { useSiteData } from "../../hooks/useSiteData";
-import { theme } from "../../theme";
 import { ProjectCard } from "../home/HomePage";
 
 function ProjectsPage() {
@@ -10,13 +10,31 @@ function ProjectsPage() {
   if (loading) return <PageSkeleton cards={3} />;
 
   return (
-    <main className="bg-slate-50 pt-28 text-slate-950">
+    <main className="bg-white pt-28 text-slate-950">
       <section className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:px-10">
-        <span className={`rounded-full ${theme.bgSoft} px-4 py-1.5 text-sm font-black uppercase tracking-widest ${theme.text}`}>Portfolio</span>
-        <h1 className="mt-5 max-w-4xl text-3xl font-black leading-tight sm:text-5xl">Work samples that make the site usable as a developer portfolio</h1>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <span className="inline-flex w-fit rounded-full bg-slate-100 px-4 py-1.5 text-sm font-black uppercase tracking-widest text-slate-600">
+            Portfolio
+          </span>
+          <h1 className="mt-5 max-w-4xl text-3xl font-black leading-tight sm:text-5xl">
+            Our project and works that wil help you understand us
+          </h1>
+        </motion.div>
         <div className="mt-10 grid gap-5 md:grid-cols-3">
-          {data.projects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
+          {data.projects.map((project, i) => (
+            <motion.div
+              key={project.id}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
+            >
+              <ProjectCard project={project} />
+            </motion.div>
           ))}
         </div>
       </section>

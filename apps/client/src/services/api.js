@@ -69,3 +69,61 @@ export function createOrder(token, payload) {
     body: JSON.stringify(payload),
   });
 }
+
+export function getAdminItems(collection, token) {
+  return apiRequest(`/admin/${collection}/items`, { token });
+}
+
+export function createAdminItem(collection, payload, token) {
+  return apiRequest(`/admin/${collection}/items`, {
+    method: "POST",
+    token,
+    body: JSON.stringify(payload),
+  });
+}
+
+export function updateAdminItem(collection, id, payload, token) {
+  return apiRequest(`/admin/${collection}/items/${id}`, {
+    method: "PUT",
+    token,
+    body: JSON.stringify(payload),
+  });
+}
+
+export function deleteAdminItem(collection, id, token) {
+  return apiRequest(`/admin/${collection}/items/${id}`, {
+    method: "DELETE",
+    token,
+  });
+}
+
+export function getCustomPages(token) {
+  return apiRequest("/admin/pages", { token });
+}
+
+export function createCustomPage(payload, token) {
+  return apiRequest("/admin/pages", {
+    method: "POST",
+    token,
+    body: JSON.stringify(payload),
+  });
+}
+
+export function updateCustomPage(id, payload, token) {
+  return apiRequest(`/admin/pages/${id}`, {
+    method: "PUT",
+    token,
+    body: JSON.stringify(payload),
+  });
+}
+
+export function deleteCustomPage(id, token) {
+  return apiRequest(`/admin/pages/${id}`, {
+    method: "DELETE",
+    token,
+  });
+}
+
+export function getPublicPage(slug) {
+  return apiRequest(`/site/pages/${slug}`);
+}
