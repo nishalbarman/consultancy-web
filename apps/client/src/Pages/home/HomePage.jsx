@@ -50,11 +50,13 @@ function HomePage() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_15%_0%,rgba(255,255,255,0.08),transparent_60%),radial-gradient(ellipse_50%_50%_at_80%_100%,rgba(255,255,255,0.04),transparent_60%)]" />
         <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent" />
         <div
-          className="pointer-events-none absolute inset-0"
+          className="pointer-events-none absolute inset-0 opacity-[0.5]"
           style={{
             backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.12) 1px, transparent 1px)",
+              "linear-gradient(rgba(255,255,255,0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.14) 1px, transparent 1px)",
             backgroundSize: "80px 80px",
+            maskImage: "radial-gradient(ellipse_60%_60%_at_50%_50%, black 30%, transparent 70%)",
+            WebkitMaskImage: "radial-gradient(ellipse_60%_60%_at_50%_50%, black 30%, transparent 70%)",
           }}
         />
         <motion.div
