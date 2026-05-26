@@ -3,7 +3,7 @@ const VERIFY_URL = "https://www.google.com/recaptcha/api/siteverify";
 
 export async function verifyRecaptcha(token) {
   if (!RECAPTCHA_SECRET) {
-    console.warn("RECAPTCHA_SECRET_KEY not set — skipping verification");
+    console.warn("RECAPTCHA_SECRET_KEY not set — skipping verification", RECAPTCHA_SECRET);
     return true;
   }
 
