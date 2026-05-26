@@ -1,37 +1,52 @@
-import React from "react";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
-
-const modules = {
-  toolbar: [
-    [{ header: [1, 2, 3, false] }],
-    ["bold", "italic", "underline", "strike"],
-    ["blockquote", "code-block"],
-    [{ list: "ordered" }, { list: "bullet" }],
-    [{ indent: "-1" }, { indent: "+1" }],
-    [{ align: [] }],
-    ["link", "image"],
-    ["clean"],
-  ],
-};
-
-const formats = [
-  "header",
-  "bold",
-  "italic",
-  "underline",
-  "strike",
-  "blockquote",
-  "code-block",
-  "list",
-  "bullet",
-  "indent",
-  "align",
-  "link",
-  "image",
-];
+import React, { useEffect, useRef } from "react";
+import Quill from "quill";
+import "quill/dist/quill.snow.css";
 
 function RichTextEditor({ value, onChange, placeholder }) {
+  const containerRef = useRef(null);
+  const editorRef = useRef(null);
+  const onChangeRef = useRef(onChange);
+
+  useEffect(() => { onChangeRef.current = onChange; }, [onChange]);
+
+  useEffect(() => {
+    if (editorRef.current) return;
+
+    const quill = new Quill(containerRef.current, {
+      theme: "snow",
+      placeholder: placeholder || "Write your page content...",
+      modules: {
+        toolbar: [
+          [{ header: [1, 2, 3, false] }],
+          ["bold", "italic", "underline", "strike"],
+          ["blockquote", "code-block"],
+          [{ list: "ordered" }, { list: "bullet" }],
+          [{ indent: "-1" }, { indent: "+1" }],
+          [{ align: [] }],
+          ["link", "image"],
+          ["clean"],
+        ],
+      },
+    });
+
+    if (value) quill.root.innerHTML = value;
+
+    quill.on("text-change", () => {
+      onChangeRef.current(quill.root.innerHTML);
+    });
+
+    editorRef.current = quill;
+  }, []);
+
+  useEffect(() => {
+    const quill = editorRef.current;
+    if (!quill) return;
+    const current = quill.root.innerHTML;
+    if (value !== current) {
+      quill.root.innerHTML = value || "";
+    }
+  }, [value]);
+
   return (
     <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
       <style>{`
@@ -48,15 +63,7 @@ function RichTextEditor({ value, onChange, placeholder }) {
         .quill-editor .ql-toolbar .ql-active .ql-stroke { stroke: #0f172a; }
         .quill-editor .ql-toolbar .ql-active .ql-fill { fill: #0f172a; }
       `}</style>
-      <ReactQuill
-        className="quill-editor"
-        theme="snow"
-        value={value || ""}
-        onChange={onChange}
-        modules={modules}
-        formats={formats}
-        placeholder={placeholder}
-      />
+      <div className="quill-editor" ref={containerRef} />
     </div>
   );
 }
