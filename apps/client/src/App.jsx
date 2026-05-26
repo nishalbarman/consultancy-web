@@ -7,7 +7,7 @@ function App() {
   const location = useLocation();
   const isHomePage = location.pathname === "/";
   const isPortalPage = ["/portal", "/portal/dashboard"].includes(location.pathname);
-  const isPlainTextPage = ["/ads.txt", "/robots.txt", "/robot.txt"].includes(location.pathname);
+  const isPlainTextPage = ["/ads.txt", "/app-ads.txt", "/robots.txt", "/robot.txt"].includes(location.pathname);
   const isAdminPage = location.pathname === "/admin";
   const hideChrome = isPlainTextPage || isAdminPage || isPortalPage;
 

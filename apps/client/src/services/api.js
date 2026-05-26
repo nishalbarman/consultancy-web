@@ -35,6 +35,14 @@ export async function getAdsTxt() {
   return response.text();
 }
 
+export async function getAppAdsTxt() {
+  const response = await fetch(`${API_BASE}/site/app-ads-txt`);
+  if (!response.ok) {
+    throw new Error("Request failed");
+  }
+  return response.text();
+}
+
 export async function getRobotsTxt() {
   const response = await fetch(`${API_BASE}/site/robots-txt`);
   if (!response.ok) {

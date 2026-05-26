@@ -10,13 +10,13 @@ import PortalAuth from "../Pages/portal/PortalAuth";
 import ProjectsPage from "../Pages/projects/ProjectsPage";
 import ServicesPage from "../Pages/services/ServicesPage";
 import TextFilePage from "../Pages/text/TextFilePage";
-import { getAdsTxt, getRobotsTxt } from "../services/api";
+import { getAdsTxt, getAppAdsTxt, getRobotsTxt } from "../services/api";
 
 function AllRoutes() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
-      <Route path="/app-ads.txt" element={<TextFilePage loader={getAdsTxt} />} />
+      <Route path="/app-ads.txt" element={<TextFilePage loader={getAppAdsTxt} />} />
       <Route path="/robots.txt" element={<TextFilePage loader={getRobotsTxt} />} />
       <Route path="/aboutus" element={<AboutPage />} />
       <Route path="/services" element={<ServicesPage />} />
