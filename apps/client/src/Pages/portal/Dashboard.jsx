@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiClock, FiLogOut, FiPackage, FiPlus, FiSend, FiUser, FiCheckCircle, FiLoader, FiX, FiAlertCircle } from "react-icons/fi";
 import { DashboardSkeleton } from "../../components/Skeleton";
-import { createOrder, getDashboard } from "../../services/api";
+import { createOrder, getDashboard, getSiteData } from "../../services/api";
 
 const inputClass = "w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-100";
 
@@ -21,18 +21,33 @@ function Dashboard() {
   const token = localStorage.getItem("userToken");
   const user = JSON.parse(localStorage.getItem("portalUser") || "{}");
   const [dashboard, setDashboard] = useState(null);
+  const [services, setServices] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [form, setForm] = useState({ serviceTitle: "Web App Development", projectName: "", description: "", timeline: "" });
+  const [form, setForm] = useState({ serviceTitle: "", projectName: "", description: "", timeline: "" });
 
   const loadDashboard = async () => setDashboard(await getDashboard(token));
-  useEffect(() => { if (!token) return navigate("/portal"); loadDashboard().catch(() => navigate("/portal")); }, []);
+  const loadServices = async () => {
+    try {
+      const site = await getSiteData();
+      setServices(site.services || []);
+      if (site.services?.length && !form.serviceTitle) {
+        setForm(p => ({ ...p, serviceTitle: site.services[0].title }));
+      }
+    } catch {} // silently fail — services are optional
+  };
+
+  useEffect(() => {
+    if (!token) return navigate("/portal");
+    loadDashboard().catch(() => navigate("/portal"));
+    loadServices();
+  }, []);
   const updateForm = (e) => setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
 
   const submitOrder = async () => {
     if (!form.projectName.trim() || !form.description.trim()) { toast({ title: "Please fill in project name and description." }); return; }
     setSubmitting(true);
-    try { await createOrder(token, form); setForm({ serviceTitle: "Web App Development", projectName: "", description: "", timeline: "" }); setShowForm(false); await loadDashboard(); toast({ title: "Order created! We'll review it shortly." }); }
+    try { await createOrder(token, form); setForm({ serviceTitle: services[0]?.title || "", projectName: "", description: "", timeline: "" }); setShowForm(false); await loadDashboard(); toast({ title: "Order created! We'll review it shortly." }); }
     catch (error) { toast({ title: error.message }); }
     finally { setSubmitting(false); }
   };
@@ -133,7 +148,12 @@ function Dashboard() {
               className="fixed inset-x-5 top-20 z-50 mx-auto max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl sm:inset-x-auto sm:left-1/2 sm:w-full sm:-translate-x-1/2">
               <div className="mb-5 flex items-center justify-between"><div><h2 className="text-xl font-black text-slate-900">New Order Request</h2><p className="mt-1 text-sm text-slate-500">Tell us what you need built.</p></div><button onClick={() => setShowForm(false)} className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600"><FiX className="h-5 w-5" /></button></div>
               <div className="grid gap-4">
-                <label className="grid gap-1.5"><span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Service Type</span><select className={inputClass} name="serviceTitle" value={form.serviceTitle} onChange={updateForm}><option>Web App Development</option><option>App Development</option><option>Backend and API Development</option><option>Admin Panel Development</option></select></label>
+                <label className="grid gap-1.5"><span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Service Type</span>
+                  <select className={inputClass} name="serviceTitle" value={form.serviceTitle} onChange={updateForm}>
+                    {services.length === 0 && <option value="">Loading services...</option>}
+                    {services.map(s => <option key={s._id || s.id} value={s.title}>{s.title}{s.price ? ` — ${s.price}` : ""}</option>)}
+                  </select>
+                </label>
                 <label className="grid gap-1.5"><span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Project Name *</span><input className={inputClass} name="projectName" placeholder="e.g. E-commerce Dashboard" value={form.projectName} onChange={updateForm} /></label>
                 <label className="grid gap-1.5"><span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Expected Timeline</span><input className={inputClass} name="timeline" placeholder="e.g. 2-4 weeks" value={form.timeline} onChange={updateForm} /></label>
                 <label className="grid gap-1.5"><span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Description *</span><textarea className={`${inputClass} min-h-28 resize-y`} name="description" placeholder="Describe your project requirements, features, and goals..." value={form.description} onChange={updateForm} /></label>
