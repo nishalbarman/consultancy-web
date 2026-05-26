@@ -20,8 +20,8 @@ function ServicesPage() {
         <div className="mt-10 grid gap-5 md:grid-cols-3">
           {data.services.map((service, i) => (
             <motion.article key={service.id} initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }} whileHover={{ y: -8 }}
-              className="flex flex-col rounded-3xl border border-slate-100 bg-white p-7 shadow-sm transition-all duration-300 hover:shadow-xl">
-              <div className="mb-6 grid h-14 w-14 place-items-center rounded-2xl bg-slate-900 text-lg font-black text-white">{service.title.slice(0, 2)}</div>
+              className="flex flex-col rounded-3xl border border-slate-100 bg-white p-7 pt-8 shadow-md transition-all duration-300 hover:shadow-xl">
+              {/* <div className="mb-6 grid h-14 w-14 place-items-center rounded-2xl bg-slate-900 text-lg font-black text-white">{service.title.slice(0, 2)}</div> */}
               <h2 className="text-xl font-black">{service.title}</h2>
               <p className="mt-3 leading-7 text-slate-600">{service.summary}</p>
               <div className="mt-5 grid gap-3">{service.features?.map((f) => <p key={f} className="flex items-center gap-2 font-bold text-slate-700"><FiCheckCircle className="text-slate-700" /> {f}</p>)}</div>
