@@ -50,11 +50,27 @@ function AdminPage() {
     if (token) loadContent().catch(() => { localStorage.removeItem("adminToken"); setToken(""); });
   }, [token]);
 
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [loginError, setLoginError] = useState("");
+
   const login = async () => {
-    const data = await apiRequest("/admin/login", { method: "POST", body: JSON.stringify({ email: adminEmail, password }) });
-    localStorage.setItem("adminToken", data.token);
-    setToken(data.token);
-    setPassword("");
+    if (!adminEmail.trim() || !password.trim()) {
+      setLoginError("Please enter both email and password.");
+      return;
+    }
+    setLoginLoading(true);
+    setLoginError("");
+    try {
+      const data = await apiRequest("/admin/login", { method: "POST", body: JSON.stringify({ email: adminEmail, password }) });
+      localStorage.setItem("adminToken", data.token);
+      setToken(data.token);
+      setPassword("");
+      setLoginError("");
+    } catch (err) {
+      setLoginError(err.message || "Invalid credentials. Please try again.");
+    } finally {
+      setLoginLoading(false);
+    }
   };
 
   const logout = () => { localStorage.removeItem("adminToken"); setToken(""); };
@@ -68,16 +84,26 @@ function AdminPage() {
             <h1 className="text-center text-2xl font-black text-slate-900">Admin Portal</h1>
             <p className="mt-2 text-center text-sm text-slate-500">Sign in to manage Technira.Space</p>
           </div>
+          {loginError && (
+            <div className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{loginError}</div>
+          )}
           <div className="grid gap-4">
             <div>
               <label className="mb-1.5 block text-sm font-semibold text-slate-700">Email</label>
-              <input className={inputField} type="email" placeholder="admin@technira.space" value={adminEmail} onChange={(e) => setAdminEmail(e.target.value)} />
+              <input className={inputField} type="email" placeholder="admin@technira.space" value={adminEmail} onChange={(e) => { setAdminEmail(e.target.value); setLoginError(""); }} />
             </div>
             <div>
               <label className="mb-1.5 block text-sm font-semibold text-slate-700">Password</label>
-              <input className={inputField} type="password" placeholder="Enter password" value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={(e) => e.key === "Enter" && login()} />
+              <input className={inputField} type="password" placeholder="Enter password" value={password} onChange={(e) => { setPassword(e.target.value); setLoginError(""); }} onKeyDown={(e) => e.key === "Enter" && login()} />
             </div>
-            <button className={`${btnPrimary} py-3`} onClick={login}>Sign In</button>
+            <button className={`${btnPrimary} py-3`} onClick={login} disabled={loginLoading}>
+              {loginLoading ? (
+                <span className="inline-flex items-center gap-2">
+                  <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+                  Signing in...
+                </span>
+              ) : "Sign In"}
+            </button>
           </div>
         </motion.div>
       </main>
