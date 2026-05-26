@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FiArrowRight, FiLock, FiMail, FiUser } from "react-icons/fi";
 import { loginUser, registerUser } from "../../services/api";
+import ReCaptchaWidget from "../../components/ReCaptchaWidget";
 
 const inputClass =
   "w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-100";
@@ -12,6 +13,8 @@ function PortalAuth() {
   const toast = ({ title }) => window.alert(title);
   const [mode, setMode] = useState("login");
   const [loading, setLoading] = useState(false);
+  const [recaptcha, setRecaptcha] = useState("");
+  const recaptchaRef = useRef(null);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -23,17 +26,20 @@ function PortalAuth() {
     setForm((prev) => ({ ...prev, [event.target.name]: event.target.value }));
 
   const submit = async () => {
+    if (!recaptcha) { toast({ title: "Please complete the reCAPTCHA verification." }); return; }
     setLoading(true);
     try {
       const response =
         mode === "register"
-          ? await registerUser(form)
-          : await loginUser({ email: form.email, password: form.password });
+          ? await registerUser({ ...form, recaptcha })
+          : await loginUser({ email: form.email, password: form.password, recaptcha });
       localStorage.setItem("userToken", response.token);
       localStorage.setItem("portalUser", JSON.stringify(response.user));
       navigate("/portal/dashboard");
     } catch (error) {
       toast({ title: error.message });
+      recaptchaRef.current?.reset();
+      setRecaptcha("");
     } finally {
       setLoading(false);
     }
@@ -156,11 +162,14 @@ function PortalAuth() {
                   />
                 </div>
               </div>
-              <motion.button
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
-                className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 py-3 text-sm font-bold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
-                onClick={submit}
+            <div className="mb-3 flex justify-center">
+              <ReCaptchaWidget ref={recaptchaRef} onChange={setRecaptcha} />
+            </div>
+            <motion.button
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
+              className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 py-3 text-sm font-bold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+              onClick={submit}
                 disabled={loading}>
                 {loading
                   ? "Please wait..."

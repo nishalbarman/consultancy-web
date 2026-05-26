@@ -1,12 +1,18 @@
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 export async function apiRequest(path, options = {}) {
+  const headers = {
+    "Content-Type": "application/json",
+    ...(options.token ? { Authorization: `Bearer ${options.token}` } : {}),
+    ...options.headers,
+  };
+
+  if (options.recaptcha) {
+    headers["x-recaptcha-token"] = options.recaptcha;
+  }
+
   const response = await fetch(`${API_BASE}${path}`, {
-    headers: {
-      "Content-Type": "application/json",
-      ...(options.token ? { Authorization: `Bearer ${options.token}` } : {}),
-      ...options.headers,
-    },
+    headers,
     ...options,
   });
 

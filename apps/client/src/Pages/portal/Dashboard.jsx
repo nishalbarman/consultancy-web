@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiClock, FiLogOut, FiPackage, FiPlus, FiSend, FiUser, FiCheckCircle, FiLoader, FiX, FiAlertCircle } from "react-icons/fi";
 import { DashboardSkeleton } from "../../components/Skeleton";
 import { createOrder, getDashboard, getSiteData } from "../../services/api";
+import ReCaptchaWidget from "../../components/ReCaptchaWidget";
 
 const inputClass = "w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-100";
 
@@ -24,6 +25,8 @@ function Dashboard() {
   const [services, setServices] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [recaptcha, setRecaptcha] = useState("");
+  const recaptchaRef = useRef(null);
   const [form, setForm] = useState({ serviceTitle: "", projectName: "", description: "", timeline: "" });
 
   const loadDashboard = async () => setDashboard(await getDashboard(token));
@@ -46,9 +49,10 @@ function Dashboard() {
 
   const submitOrder = async () => {
     if (!form.projectName.trim() || !form.description.trim()) { toast({ title: "Please fill in project name and description." }); return; }
+    if (!recaptcha) { toast({ title: "Please complete the reCAPTCHA verification." }); return; }
     setSubmitting(true);
-    try { await createOrder(token, form); setForm({ serviceTitle: services[0]?.title || "", projectName: "", description: "", timeline: "" }); setShowForm(false); await loadDashboard(); toast({ title: "Order created! We'll review it shortly." }); }
-    catch (error) { toast({ title: error.message }); }
+    try { await createOrder(token, { ...form, recaptcha }); setForm({ serviceTitle: services[0]?.title || "", projectName: "", description: "", timeline: "" }); setRecaptcha(""); recaptchaRef.current?.reset(); setShowForm(false); await loadDashboard(); toast({ title: "Order created! We'll review it shortly." }); }
+    catch (error) { toast({ title: error.message }); recaptchaRef.current?.reset(); setRecaptcha(""); }
     finally { setSubmitting(false); }
   };
 
@@ -157,6 +161,9 @@ function Dashboard() {
                 <label className="grid gap-1.5"><span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Project Name *</span><input className={inputClass} name="projectName" placeholder="e.g. E-commerce Dashboard" value={form.projectName} onChange={updateForm} /></label>
                 <label className="grid gap-1.5"><span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Expected Timeline</span><input className={inputClass} name="timeline" placeholder="e.g. 2-4 weeks" value={form.timeline} onChange={updateForm} /></label>
                 <label className="grid gap-1.5"><span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Description *</span><textarea className={`${inputClass} min-h-28 resize-y`} name="description" placeholder="Describe your project requirements, features, and goals..." value={form.description} onChange={updateForm} /></label>
+                <div className="mb-2 flex justify-center">
+                  <ReCaptchaWidget ref={recaptchaRef} onChange={setRecaptcha} />
+                </div>
                 <button onClick={submitOrder} disabled={submitting} className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 py-3 text-sm font-bold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60">{submitting ? <>Submitting...</> : <><FiSend className="h-4 w-4" /> Submit Order Request</>}</button>
               </div>
             </motion.div>

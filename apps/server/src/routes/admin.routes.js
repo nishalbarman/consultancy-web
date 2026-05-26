@@ -25,10 +25,11 @@ import {
   deleteCustomPage,
 } from "../controllers/customPage.controller.js";
 import { requireAdmin } from "../middleware/requireAdmin.js";
+import { requireRecaptcha } from "../middleware/requireRecaptcha.js";
 
 const router = Router();
 
-router.post("/login", loginAdmin);
+router.post("/login", requireRecaptcha, loginAdmin);
 router.get("/content", requireAdmin, getAdminContent);
 router.get("/orders", requireAdmin, getAdminOrders);
 router.put("/orders/:id", requireAdmin, updateOrder);

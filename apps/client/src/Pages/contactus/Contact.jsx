@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { ImSpinner10 } from "react-icons/im";
 import { motion } from "framer-motion";
 import { createLead } from "../../services/api";
 import { theme } from "../../theme";
+import ReCaptchaWidget from "../../components/ReCaptchaWidget";
 
 const inputClass = "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 font-medium text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-100";
 
@@ -11,6 +12,8 @@ function Contact() {
   const initialFormData = { name: "", message: "", email: "", phone: "" };
   const [formData, setFormData] = useState(initialFormData);
   const [sending, setSending] = useState(false);
+  const [recaptcha, setRecaptcha] = useState("");
+  const recaptchaRef = useRef(null);
   const toast = ({ title, description = "" }) => window.alert(`${title}${description ? `\n${description}` : ""}`);
 
   const sendMessage = async () => {
@@ -19,9 +22,10 @@ function Contact() {
     if (!formData.email || !emailTester.test(formData.email)) error.push("Email must be valid.");
     if (!formData.message || formData.message.length < 11) error.push("Message must be at least 10 characters.");
     if (!formData.phone || formData.phone.toString().length !== 10) error.push("Phone must be 10 digits.");
+    if (!recaptcha) error.push("Please complete the reCAPTCHA verification.");
     if (error.length > 0) { toast({ title: "Validation failed", description: error.join(" ") }); return; }
-    try { setSending(true); await createLead(formData); setFormData(initialFormData); toast({ title: "Message submitted!", description: "Your message has been sent. We will get back to you before 48 hours." }); }
-    catch (err) { toast({ title: "Message sent failed!" }); }
+    try { setSending(true); await createLead({ ...formData, recaptcha }); setFormData(initialFormData); setRecaptcha(""); recaptchaRef.current?.reset(); toast({ title: "Message submitted!", description: "Your message has been sent. We will get back to you before 48 hours." }); }
+    catch (err) { toast({ title: err.message || "Message send failed!" }); recaptchaRef.current?.reset(); setRecaptcha(""); }
     finally { setSending(false); }
   };
 
@@ -52,6 +56,9 @@ function Contact() {
           </div>
           <input className={`${inputClass} mt-4`} onChange={handleInputChange} type="tel" name="phone" maxLength={10} placeholder="Phone Number" value={formData.phone} />
           <textarea className={`${inputClass} mt-4 min-h-40 resize-y`} onChange={handleInputChange} name="message" placeholder="Message*" value={formData.message} />
+          <div className="mt-4 flex justify-center">
+            <ReCaptchaWidget ref={recaptchaRef} onChange={setRecaptcha} />
+          </div>
           <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={sendMessage}
             className={`mt-5 inline-flex w-full items-center justify-center gap-3 rounded-2xl ${theme.gradientBtn} px-6 py-4 font-bold text-white shadow-sm ${theme.gradientBtnHover} disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto`} disabled={sending}>
             Reach Us {sending && <ImSpinner10 className="animate-spin" />}

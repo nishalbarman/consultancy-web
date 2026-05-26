@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   FiArrowLeft, FiBriefcase, FiFileText, FiFolder, FiGrid, FiImage,
   FiLogOut, FiMessageSquare, FiPlus, FiSave, FiServer, FiStar,
@@ -7,6 +7,7 @@ import {
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import { PageSkeleton, SkeletonBlock } from "../../components/Skeleton";
+import ReCaptchaWidget from "../../components/ReCaptchaWidget";
 const RichTextEditor = React.lazy(() => import("../../components/RichTextEditor"));
 import {
   apiRequest, getAdminItems, createAdminItem, updateAdminItem, deleteAdminItem,
@@ -52,22 +53,27 @@ function AdminPage() {
 
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginError, setLoginError] = useState("");
+  const [recaptcha, setRecaptcha] = useState("");
+  const recaptchaRef = useRef(null);
 
   const login = async () => {
     if (!adminEmail.trim() || !password.trim()) {
       setLoginError("Please enter both email and password.");
       return;
     }
+    if (!recaptcha) { setLoginError("Please complete the reCAPTCHA verification."); return; }
     setLoginLoading(true);
     setLoginError("");
     try {
-      const data = await apiRequest("/admin/login", { method: "POST", body: JSON.stringify({ email: adminEmail, password }) });
+      const data = await apiRequest("/admin/login", { method: "POST", body: JSON.stringify({ email: adminEmail, password, recaptcha }) });
       localStorage.setItem("adminToken", data.token);
       setToken(data.token);
       setPassword("");
       setLoginError("");
     } catch (err) {
       setLoginError(err.message || "Invalid credentials. Please try again.");
+      recaptchaRef.current?.reset();
+      setRecaptcha("");
     } finally {
       setLoginLoading(false);
     }
@@ -95,6 +101,9 @@ function AdminPage() {
             <div>
               <label className="mb-1.5 block text-sm font-semibold text-slate-700">Password</label>
               <input className={inputField} type="password" placeholder="Enter password" value={password} onChange={(e) => { setPassword(e.target.value); setLoginError(""); }} onKeyDown={(e) => e.key === "Enter" && login()} />
+            </div>
+            <div className="flex justify-center py-1">
+              <ReCaptchaWidget ref={recaptchaRef} onChange={setRecaptcha} />
             </div>
             <button className={`${btnPrimary} py-3`} onClick={login} disabled={loginLoading}>
               {loginLoading ? (
